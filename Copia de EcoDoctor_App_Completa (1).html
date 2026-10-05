@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#176b45">
+<title>EcoDoctor — Médico de Ecosistemas</title>
+<style>
+:root{
+  --green:#176b45; --green2:#2f9e68; --light:#eef8f1; --dark:#173b2a;
+  --yellow:#f2b84b; --red:#d95757; --gray:#66736d; --white:#fff;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#f5f8f6;color:#173b2a}
+header{background:linear-gradient(135deg,#145c3b,#2f9e68);color:white;padding:24px 18px 28px;text-align:center}
+.logo{font-size:42px}
+h1{margin:5px 0;font-size:30px}
+.subtitle{margin:0;opacity:.92}
+main{max-width:850px;margin:auto;padding:16px}
+.card{background:white;border-radius:20px;padding:20px;margin:14px 0;box-shadow:0 4px 18px rgba(20,70,45,.08)}
+h2{margin-top:0}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(max-width:600px){.grid{grid-template-columns:1fr}}
+label{font-weight:650;display:block;margin-bottom:6px}
+input,select,textarea{width:100%;padding:12px;border:1px solid #cbd8d0;border-radius:12px;font-size:16px;background:white}
+textarea{min-height:90px;resize:vertical}
+button{border:0;border-radius:13px;padding:13px 17px;font-size:16px;font-weight:700;cursor:pointer}
+.primary{background:var(--green);color:white}
+.secondary{background:#e6f3eb;color:var(--green)}
+.danger{background:#fbe9e9;color:#a62e2e}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}
+.rangeRow{display:flex;align-items:center;gap:10px}
+input[type=range]{padding:0;accent-color:var(--green)}
+.value{min-width:35px;text-align:center;font-weight:800}
+.scoreBox{text-align:center;padding:24px;border-radius:20px;background:var(--light);margin-top:16px}
+.score{font-size:64px;font-weight:850;line-height:1}
+.status{font-size:24px;font-weight:800;margin-top:8px}
+.bar{height:16px;background:#dce8e0;border-radius:20px;overflow:hidden;margin:15px 0}
+.fill{height:100%;width:0%;transition:.4s}
+.normal{background:#39a96b}.attention{background:var(--yellow)}.alert{background:var(--red)}
+.recommendation{font-size:18px;line-height:1.5}
+.hidden{display:none}
+.small{font-size:13px;color:var(--gray)}
+.historyItem{border:1px solid #dbe5df;border-radius:14px;padding:13px;margin:9px 0}
+.badge{display:inline-block;border-radius:999px;padding:4px 9px;font-size:13px;font-weight:750}
+.badge.normal{background:#dff4e7;color:#176b45}
+.badge.attention{background:#fff1cf;color:#8a6100}
+.badge.alert{background:#fbe0e0;color:#a62e2e}
+footer{text-align:center;color:var(--gray);padding:20px;font-size:13px}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">🌿🩺</div>
+  <h1>EcoDoctor</h1>
+  <p class="subtitle">Médico de ecosistemas · Proyecto FLL BIOGLOW</p>
+</header>
+
+<main>
+<section class="card">
+  <h2>📍 1. Nueva revisión</h2>
+  <div class="grid">
+    <div>
+      <label for="place">Lugar</label>
+      <input id="place" placeholder="Ej. Parque de Castrelos">
+    </div>
+    <div>
+      <label for="date">Fecha</label>
+      <input id="date" type="date">
+    </div>
+  </div>
+</section>
+
+<section class="card">
+  <h2>🔬 2. Datos del ecosistema</h2>
+  <p class="small">Puntuad cada indicador de 0 a 10 según vuestras observaciones. En la presentación podéis explicar cómo establecisteis vuestra escala.</p>
+
+  <div id="indicators"></div>
+</section>
+
+<section class="card">
+  <h2>👀 3. Observaciones</h2>
+  <div class="grid">
+    <div>
+      <label for="birds">🐦 Aves observadas</label>
+      <input id="birds" type="number" min="0" max="100" value="0">
+    </div>
+    <div>
+      <label for="insects">🐝 Insectos/polinizadores</label>
+      <input id="insects" type="number" min="0" max="100" value="0">
+    </div>
+    <div>
+      <label for="plants">🌱 Tipos de plantas</label>
+      <input id="plants" type="number" min="0" max="100" value="0">
+    </div>
+    <div>
+      <label for="water">💧 Estado del agua (0–10)</label>
+      <input id="water" type="number" min="0" max="10" value="5">
+    </div>
+  </div>
+  <br>
+  <label for="notes">📝 Notas de campo</label>
+  <textarea id="notes" placeholder="Ej. Hay pocas flores, encontramos basura, vimos muchos insectos..."></textarea>
+</section>
+
+<section class="card">
+  <h2>🤖 4. Datos del SPIKE Prime</h2>
+  <p class="small">Estos campos permiten introducir las mediciones obtenidas por vuestro robot. No fingimos que el sensor mide algo que no puede medir.</p>
+  <div class="grid">
+    <div>
+      <label for="color">🎨 Lectura del sensor de color (0–10)</label>
+      <input id="color" type="number" min="0" max="10" value="5">
+    </div>
+    <div>
+      <label for="distance">📏 Observación del sensor de distancia (0–10)</label>
+      <input id="distance" type="number" min="0" max="10" value="5">
+    </div>
+    <div>
+      <label for="force">🔘 Control / muestra realizada (0–10)</label>
+      <input id="force" type="number" min="0" max="10" value="10">
+    </div>
+  </div>
+</section>
+
+<section class="card">
+  <h2>🧠 5. Diagnóstico</h2>
+  <button class="primary" onclick="diagnose()">Analizar ecosistema</button>
+
+  <div id="result" class="hidden">
+    <div class="scoreBox">
+      <div class="score" id="score">0</div>
+      <div>/100</div>
+      <div class="bar"><div id="fill" class="fill"></div></div>
+      <div class="status" id="status"></div>
+    </div>
+
+    <div class="card" style="box-shadow:none;background:#f8fbf9">
+      <h2>🩺 Diagnóstico orientativo</h2>
+      <p id="diagnosis" class="recommendation"></p>
+      <h2>💡 Recomendación</h2>
+      <p id="recommendation" class="recommendation"></p>
+    </div>
+
+    <div class="actions">
+      <button class="primary" onclick="saveResult()">💾 Guardar revisión</button>
+      <button class="secondary" onclick="window.print()">🖨️ Imprimir / PDF</button>
+    </div>
+  </div>
+</section>
+
+<section class="card">
+  <h2>📊 Historial</h2>
+  <div id="history"></div>
+  <div class="actions">
+    <button class="secondary" onclick="exportCSV()">⬇️ Exportar datos</button>
+    <button class="danger" onclick="clearHistory()">Borrar historial</button>
+  </div>
+</section>
+
+<section class="card">
+  <h2>ℹ️ ¿Cómo funciona?</h2>
+  <ol>
+    <li>Observamos un ecosistema.</li>
+    <li>Recogemos indicadores y datos del SPIKE Prime.</li>
+    <li>EcoDoctor calcula un índice de 0 a 100.</li>
+    <li>Clasifica el estado como Normal, Atención o Alerta.</li>
+    <li>Propone una acción que los humanos pueden investigar.</li>
+  </ol>
+  <p class="small"><strong>Importante:</strong> EcoDoctor es un prototipo educativo de alerta temprana. No sustituye a un biólogo, ecólogo ni a una medición científica profesional.</p>
+</section>
+</main>
+
+<footer>EcoDoctor · FLL BIOGLOW · Prototipo educativo</footer>
+
+<script>
+const defs = [
+  ["vegetation","🌱 Vegetación saludable", "¿Hay plantas sanas y variadas?",5],
+  ["pollinators","🐝 Polinizadores", "Presencia y variedad observada",5],
+  ["birdsIndex","🐦 Aves", "Presencia y variedad observada",5],
+  ["soil","🪱 Suelo", "Aspecto, humedad y ausencia de señales de degradación",5],
+  ["habitat","🏡 Hábitat", "Refugios, flores, árboles y diversidad de microhábitats",5],
+  ["humanImpact","🚯 Impacto humano", "10 = poco impacto; 0 = mucho impacto",5]
+];
+
+const indicators = document.getElementById("indicators");
+defs.forEach(([id,title,help,val])=>{
+  indicators.innerHTML += `
+  <div style="margin:18px 0">
+    <label>${title}</label>
+    <div class="rangeRow">
+      <input id="${id}" type="range" min="0" max="10" value="${val}" oninput="document.getElementById('${id}v').textContent=this.value">
+      <span class="value" id="${id}v">${val}</span>
+    </div>
+    <div class="small">${help}</div>
+  </div>`;
+});
+
+document.getElementById("date").value = new Date().toISOString().slice(0,10);
+
+function n(id){
+  const x = Number(document.getElementById(id).value);
+  return Number.isFinite(x) ? x : 0;
+}
+
+function diagnose(){
+  const base = defs.map(d=>n(d[0])).reduce((a,b)=>a+b,0) / 60 * 70;
+  const obs = (
+    Math.min(n("birds"),10)/10*7.5 +
+    Math.min(n("insects"),10)/10*7.5 +
+    Math.min(n("plants"),10)/10*7.5 +
+    n("water")/10*7.5
+  );
+  const robot = (n("color")+n("distance")+n("force"))/30*15;
+  let score = Math.round(Math.max(0,Math.min(100,base+obs+robot)));
+
+  let status, cls, diagnosis, recommendation;
+  if(score >= 75){
+    status="🟢 NORMAL";
+    cls="normal";
+    diagnosis="Los indicadores recogidos muestran un estado generalmente favorable. Aun así, conviene repetir las mediciones para detectar cambios con el tiempo.";
+    recommendation="Mantener el hábitat, proteger la vegetación y repetir la revisión periódicamente.";
+  } else if(score >= 50){
+    status="🟡 ATENCIÓN";
+    cls="attention";
+    diagnosis="Hay algunos indicadores que podrían estar bajo presión. El resultado no demuestra por sí solo una causa: señala qué zona merece una investigación más detallada.";
+    recommendation="Revisar los indicadores con puntuación baja y comprobar si el problema se repite en otras mediciones.";
+  } else {
+    status="🔴 ALERTA";
+    cls="alert";
+    diagnosis="Varios indicadores presentan valores bajos. EcoDoctor recomienda investigar el lugar antes de tomar decisiones, especialmente si el patrón se mantiene.";
+    recommendation="Repetir la medición, comparar con otro ecosistema y consultar a una persona experta antes de intervenir.";
+  }
+
+  document.getElementById("score").textContent=score;
+  document.getElementById("status").textContent=status;
+  document.getElementById("diagnosis").textContent=diagnosis;
+  document.getElementById("recommendation").textContent=recommendation;
+  const fill=document.getElementById("fill");
+  fill.style.width=score+"%";
+  fill.className="fill "+cls;
+  document.getElementById("result").classList.remove("hidden");
+  window.currentResult={score,status,cls,diagnosis,recommendation};
+}
+
+function getData(){
+  return {
+    date:document.getElementById("date").value,
+    place:document.getElementById("place").value || "Sin nombre",
+    score:window.currentResult?.score ?? null,
+    birds:n("birds"), insects:n("insects"), plants:n("plants"), water:n("water"),
+    vegetation:n("vegetation"), pollinators:n("pollinators"), birdsIndex:n("birdsIndex"),
+    soil:n("soil"), habitat:n("habitat"), humanImpact:n("humanImpact"),
+    color:n("color"), distance:n("distance"), force:n("force"),
+    notes:document.getElementById("notes").value
+  };
+}
+
+function saveResult(){
+  if(!window.currentResult){ diagnose(); }
+  const data=getData();
+  const history=JSON.parse(localStorage.getItem("ecoDoctorHistory")||"[]");
+  history.unshift(data);
+  localStorage.setItem("ecoDoctorHistory",JSON.stringify(history));
+  renderHistory();
+  alert("Revisión guardada en este dispositivo.");
+}
+
+function renderHistory(){
+  const history=JSON.parse(localStorage.getItem("ecoDoctorHistory")||"[]");
+  const box=document.getElementById("history");
+  if(!history.length){box.innerHTML='<p class="small">Todavía no hay revisiones guardadas.</p>';return}
+  box.innerHTML=history.map((x,i)=>{
+    const cls=x.score>=75?"normal":x.score>=50?"attention":"alert";
+    const label=x.score>=75?"NORMAL":x.score>=50?"ATENCIÓN":"ALERTA";
+    return `<div class="historyItem">
+      <strong>${escapeHtml(x.place)}</strong> · ${x.date}
+      <span class="badge ${cls}">${label}</span>
+      <br><strong>${x.score}/100</strong>
+      <span class="small"> · Aves: ${x.birds} · Polinizadores: ${x.insects} · Plantas: ${x.plants}</span>
+    </div>`;
+  }).join("");
+}
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+}
+function clearHistory(){
+  if(confirm("¿Borrar todas las revisiones guardadas en este dispositivo?")){
+    localStorage.removeItem("ecoDoctorHistory"); renderHistory();
+  }
+}
+function exportCSV(){
+  const h=JSON.parse(localStorage.getItem("ecoDoctorHistory")||"[]");
+  if(!h.length){alert("No hay datos para exportar.");return}
+  const keys=Object.keys(h[0]);
+  const csv=[keys.join(";"),...h.map(row=>keys.map(k=>`"${String(row[k]??"").replace(/"/g,'""')}"`).join(";"))].join("\\n");
+  const blob=new Blob(["\\ufeff"+csv],{type:"text/csv;charset=utf-8"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob); a.download="ecodoctor_historial.csv"; a.click();
+  URL.revokeObjectURL(a.href);
+}
+renderHistory();
+</script>
+</body>
+</html>
